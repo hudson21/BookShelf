@@ -19,6 +19,9 @@ app.use(bodyParser.json());
 app.use(cookieParser());
 const { auth } = require('./middleware/auth');
 
+//To tell express that every time it runs it will execute the build folder too
+app.use(express.static('client/build'))
+
 //=====================================(GET)=========================================//
 app.get('/api/auth',auth,(req,res)=>{
     res.json({
@@ -154,6 +157,13 @@ app.delete('/api/delete_book',(req,res)=>{
         res.status(200).send(true);
     })
 })
+
+if(process.env.NODE_ENV === 'production'){
+    const path = require('path');
+    app.get('/*',(req,res)=>{
+        res.sendfile(path.resolve(__dirname,'../client','build','index.html'));
+    })
+}
 
 const port = process.env.PORT || 3001;
 app.listen(port,()=>{
